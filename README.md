@@ -11,7 +11,7 @@
 ## 1. Team Information
 **Team Name**: Luminara
 
-**Member Contact**:
+**Members**:
 
 | Name                 | GitHub Profile                                   | Contact                     |
 |----------------------|--------------------------------------------------|-----------------------------|
