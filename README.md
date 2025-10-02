@@ -98,8 +98,9 @@ AstroLife Engine transforms these hundreds of publications into an accessible, A
 ---
 
 ## 11. NASA Data
-- TBA
-
+- [A list of 608 full-text open-access Space Biology publications](https://github.com/jgalazka/SB_publications/tree/main)
+- [NASA Open Science Data Repository](https://science.nasa.gov/biological-physical/data/)
+- 
 ---
 
 ## 12. Other References
