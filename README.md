@@ -24,37 +24,51 @@
 ---
 
 ## 2. Executive Summary
-- Problem: TBA 
-- Solution: TBA
-- Outcome: TBA
+
+NASA’s decades of space biology research have produced critical insights into how humans, plants, and living systems adapt to the challenges of space. Yet this knowledge, while publicly available, is dispersed across hundreds of publications and databases, making it difficult for researchers, mission planners, and policymakers to access and apply effectively.
+
+AstroLife Engine transforms these hundreds of publications into an accessible, AI-powered dashboard, enabling researchers, mission planners, and policymakers to quickly uncover insights, identify gaps, and support safer missions to the Moon, Mars, and beyond.
 
 ---
 
-## 3. Introduction
-- Context: TBA
-- Need: TBA
+## 3. Challanges
+- **Data Accessibility**: NASA’s bioscience research is scattered across hundreds of publications and multiple databases, making it hard to access and cross-reference relevant studies.
+
+- **Information Overload**: Researchers and mission planners face difficulty extracting actionable insights from the massive volume of experimental data.
+
+- **Knowledge Gaps Identification**: Without a unified view, it’s challenging to pinpoint areas that require further study or replication.
+
+- **Integration of Diverse Data**: Publications, raw datasets (OSDR), and mission metadata need to be connected coherently for meaningful analysis.
+
+- **Usability**: Existing resources are not optimized for quick exploration or decision-making by multidisciplinary users.
 
 ---
 
-## 4. Problem Statement
-- TBA  
-- TBA 
+## 4. Objectives
+- **Centralize Knowledge**: Aggregate 600+ NASA space biology publications into a single accessible platform.
+
+- **AI-Powered Summaries**: Use AI to extract key results, conclusions, and metrics from publications.
+
+- **Visualize Connections**: Build interactive dashboards and knowledge graphs to show relationships between experiments, organisms, and outcomes.
+
+- **Identify Gaps & Trends**: Highlight areas of scientific progress, consensus, and missing research opportunities.
+
+- **Support Decision-Making**: Provide actionable insights for scientists, mission planners, and policy makers.
+
+- **Promote Open Science**: Ensure full use of NASA’s open datasets while making them understandable and navigable.
 
 ---
 
-## 5. Objectives
-- TBA
-- TBA
-- TBA
-- TBA
+## 5. Target Users
+- **Scientists & Researchers**: Looking to generate new hypotheses or analyze cross-study trends.
 
----
+- **Mission Planners & Engineers**: Seeking actionable insights for safe and efficient lunar and Martian missions.
 
-## 6. Target Users
-- TBA
-- TBA
-- TBA
-- TBA
+- **Program Managers & Funders**: Evaluating research priorities, progress, and gaps for investment decisions.
+
+- **Educators & Students**: Exploring space biology concepts for learning and outreach.
+
+- **Global Research Community**: Anyone interested in leveraging NASA open data for innovation and discovery.
 
 ---
 
