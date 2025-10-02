@@ -8,9 +8,11 @@
 
 ---
 
-## 1. Title & Team
-**Project Title**: Astrolife - Engine  
-**Team**: Luminara  
+## 1. Team Information
+**Team Name**: Luminara
+
+**Member Contact**:
+
 | Name                 | GitHub Profile                                   | Contact                     |
 |----------------------|--------------------------------------------------|-----------------------------|
 | Ryan Ahmed           | [RyanAhmed911](https://github.com/RyanAhmed911) | TBA                         |
@@ -67,17 +69,14 @@
 ## 8. System Architecture
 - **Frontend**: TBA
 - **Backend**: TBA
-- **Datastores**: TBA
-- **ML Models**: TBA
+- **Datasbase**: TBA
 
 ---
 
 ## 9. Features & Components
 - **Visualization**: TBA
 - **Categorization**: TBA
-- **Habitability Scoring**: TBA
-- **SNR Calculation**: TBA
-- **ML/AI Integration**: TBA
+
 
 ---
 
