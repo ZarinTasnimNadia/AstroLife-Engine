@@ -1,4 +1,4 @@
-<!-- no toc --># AstroLife-Engine | A Space Biology Knowledge Engine 
+# AstroLife-Engine | A Space Biology Knowledge Engine <!-- omit from toc -->
 
 ***AstroLife Engine is a dynamic web application designed to simplify decades of NASA’s bioscience research for the future of human space exploration. By leveraging NASA’s open dataset of more than 600 space biology publications, AstroLife makes it easy to search, identify, and visualize key findings. The platform helps researchers, mission planners, and space enthusiasts explore insights more efficiently, enabling better understanding of how living systems adapt to space and supporting humanity’s journey to the Moon, Mars, and beyond.***  
 
