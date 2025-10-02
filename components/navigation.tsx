@@ -12,6 +12,7 @@ export function Navigation() {
     { href: "/", label: "Home" },
     { href: "/dashboard", label: "Explore" },
     { href: "/graph", label: "Knowledge Graph" },
+    { href: "/chat", label: "AI Chat" },
     { href: "/analytics", label: "Analytics" },
     { href: "/about", label: "About" },
   ]

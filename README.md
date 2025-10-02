@@ -1,6 +1,6 @@
 # AstroLife-Engine | A Space Biology Knowledge Engine <!-- omit from toc -->
 
-***AstroLife Engine is a dynamic web application designed to simplify decades of NASA’s bioscience research for the future of human space exploration. By leveraging NASA’s open dataset of more than 600 space biology publications, AstroLife makes it easy to search, identify, and visualize key findings. The platform helps researchers, mission planners, and space enthusiasts explore insights more efficiently, enabling better understanding of how living systems adapt to space and supporting humanity’s journey to the Moon, Mars, and beyond.***  
+**_AstroLife Engine is a dynamic web application designed to simplify decades of NASA’s bioscience research for the future of human space exploration. By leveraging NASA’s open dataset of more than 600 space biology publications, AstroLife makes it easy to search, identify, and visualize key findings. The platform helps researchers, mission planners, and space enthusiasts explore insights more efficiently, enabling better understanding of how living systems adapt to space and supporting humanity’s journey to the Moon, Mars, and beyond._**
 
 - [Live Web App](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
@@ -22,21 +22,21 @@
 - [12. NASA Data](#12-nasa-data)
 - [13. Other References](#13-other-references)
 
-
 ---
 
 ## 1. Team Information
+
 **Team Name**: Luminara
 
 **Members**:
 
-| Name                 | GitHub Profile                                   | Contact                     |
-|----------------------|--------------------------------------------------|-----------------------------|
-| Ryan Ahmed           | [RyanAhmed911](https://github.com/RyanAhmed911) | TBA                         |
-| Nusayba Mahfuza Zaman| [Nusuwuba](https://github.com/Nusuwuba)         | nusaybazaman3@gmail.com     |
-| Raiyan Rahman        | [Raiyan465-F1](https://github.com/Raiyan465-F1) | TBA                         |
-| Zarin Tasnim         | [ZarinTasnimNadia](https://github.com/ZarinTasnimNadia) | zarin_nadia@yahoo.com       |
-| Al-Saihan Tajvi      | [Al-Saihan](https://github.com/Al-Saihan)       | al.saihan.bafsd.5@gmail.com |
+| Name                  | GitHub Profile                                          | Contact                     |
+| --------------------- | ------------------------------------------------------- | --------------------------- |
+| Ryan Ahmed            | [RyanAhmed911](https://github.com/RyanAhmed911)         | TBA                         |
+| Nusayba Mahfuza Zaman | [Nusuwuba](https://github.com/Nusuwuba)                 | nusaybazaman3@gmail.com     |
+| Raiyan Rahman         | [Raiyan465-F1](https://github.com/Raiyan465-F1)         | TBA                         |
+| Zarin Tasnim          | [ZarinTasnimNadia](https://github.com/ZarinTasnimNadia) | zarin_nadia@yahoo.com       |
+| Al-Saihan Tajvi       | [Al-Saihan](https://github.com/Al-Saihan)               | al.saihan.bafsd.5@gmail.com |
 
 ---
 
@@ -49,6 +49,7 @@ AstroLife Engine transforms these hundreds of publications into an accessible, A
 ---
 
 ## 3. Challanges
+
 - **Data Accessibility**: NASA’s bioscience research is scattered across hundreds of publications and multiple databases, making it hard to access and cross-reference relevant studies.
 
 - **Information Overload**: Researchers and mission planners face difficulty extracting actionable insights from the massive volume of experimental data.
@@ -62,6 +63,7 @@ AstroLife Engine transforms these hundreds of publications into an accessible, A
 ---
 
 ## 4. Objectives
+
 - **Centralize Knowledge**: Aggregate 600+ NASA space biology publications into a single accessible platform.
 
 - **AI-Powered Summaries**: Use AI to extract key results, conclusions, and metrics from publications.
@@ -77,6 +79,7 @@ AstroLife Engine transforms these hundreds of publications into an accessible, A
 ---
 
 ## 5. Target Users
+
 - **Scientists & Researchers**: Looking to generate new hypotheses or analyze cross-study trends.
 
 - **Mission Planners & Engineers**: Seeking actionable insights for safe and efficient lunar and Martian missions.
@@ -90,42 +93,96 @@ AstroLife Engine transforms these hundreds of publications into an accessible, A
 ---
 
 ## 6. Solution Overview
+
 - TBA
 
 ---
 
 ## 7. How It Works
+
 - TBA
 
 ---
 
 ## 8. Impact
+
 - TBA
 
 ---
 
 ## 9. Conclusion
+
 - TBA
 
 ---
 
 ## 10. Use Of Artificial Intelligence
+
 - TBA
 
 ---
 
 ## 11. Try Our Project
+
+### Prerequisites
+
+- Node.js 18+ and pnpm
+- PostgreSQL database (or use the provided Neon database)
+- Groq API key (optional, for AI summaries)
+
+### Setup Instructions
+
+1. **Clone the repository**
+
 ```bash
-sudo rm -rf /*
+git clone <repository-url>
+cd AstroLife-Engine
 ```
 
+2. **Install dependencies**
+
+```bash
+pnpm install
+```
+
+3. **Configure environment variables**
+   Create a `.env.local` file in the root directory:
+
+```bash
+# Groq API Configuration (optional - for AI summaries)
+# Get your API key from: https://console.groq.com/keys
+GROQ_API_KEY=your_groq_api_key_here
+
+# Database is already configured in the code
+# If you want to use a different database, update the connection string in app/api/publications/route.ts
+```
+
+4. **Run the development server**
+
+```bash
+pnpm dev
+```
+
+5. **Open your browser**
+   Navigate to `http://localhost:3000`
+
+### Features
+
+- **Database Integration**: Uses PostgreSQL with pgvector for semantic search
+- **AI Summaries**: Powered by Groq's Llama 3.3 70B model (with fallback)
+- **AI Chat Assistant**: Intelligent research assistant that can answer complex questions about space biology
+- **Interactive Dashboard**: Search, filter, and explore space biology publications
+- **Knowledge Graph**: Visualize relationships between publications and concepts
+- **Reference Linking**: Direct links to DOI and publication sources
+- **Similar Article Discovery**: AI-powered recommendations for related research
+
 ## 12. NASA Data
+
 - [A list of 608 full-text open-access Space Biology publications](https://github.com/jgalazka/SB_publications/tree/main)
 - [NASA Open Science Data Repository](https://science.nasa.gov/biological-physical/data/)
 
 ---
 
 ## 13. Other References
+
 - TBA
-
-

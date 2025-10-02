@@ -40,13 +40,23 @@ export function EvidenceModal({ publication, open, onOpenChange }: EvidenceModal
           year: publication.year,
         }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`)
+          }
+          return res.json()
+        })
         .then((data) => {
-          setAiSummary(data.summary || "")
+          if (data.error) {
+            console.error("[v0] API returned error:", data.error)
+            setAiSummary(data.summary || "Unable to generate AI summary at this time.")
+          } else {
+            setAiSummary(data.summary || "")
+          }
         })
         .catch((error) => {
           console.error("[v0] Error fetching AI summary:", error)
-          setAiSummary("Unable to generate AI summary at this time.")
+          setAiSummary("Unable to generate AI summary at this time. Please check your connection and try again.")
         })
         .finally(() => {
           setSummaryLoading(false)
