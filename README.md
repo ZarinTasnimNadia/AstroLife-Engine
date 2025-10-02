@@ -1,4 +1,4 @@
-# AstroLife-Engine | A Space Biology Knowledge Engine 
+AstroLife-Engine | A Space Biology Knowledge Engine 
 
 ***AstroLife Engine is a dynamic web application designed to simplify decades of NASA’s bioscience research for the future of human space exploration. By leveraging NASA’s open dataset of more than 600 space biology publications, AstroLife makes it easy to search, identify, and visualize key findings. The platform helps researchers, mission planners, and space enthusiasts explore insights more efficiently, enabling better understanding of how living systems adapt to space and supporting humanity’s journey to the Moon, Mars, and beyond.***  
 
@@ -8,21 +8,21 @@
 
 ## Table of Contents
 
-- [AstroLife-Engine | A Space Biology Knowledge Engine](#astrolife-engine--a-space-biology-knowledge-engine)
-  - [Table of Contents](#table-of-contents)
-  - [1. Team Information](#1-team-information)
-  - [2. Executive Summary](#2-executive-summary)
-  - [3. Challanges](#3-challanges)
-  - [4. Objectives](#4-objectives)
-  - [5. Target Users](#5-target-users)
-  - [6. Solution Overview](#6-solution-overview)
-  - [7. How It Works](#7-how-it-works)
-  - [8. Impact](#8-impact)
-  - [9. Conclusion](#9-conclusion)
-  - [10. Use Of Artificial Intelligence](#10-use-of-artificial-intelligence)
-  - [11. Try Our Project](#11-try-our-project)
-  - [12. NASA Data](#12-nasa-data)
-  - [13. Other References](#13-other-references)
+- [Table of Contents](#table-of-contents)
+- [1. Team Information](#1-team-information)
+- [2. Executive Summary](#2-executive-summary)
+- [3. Challanges](#3-challanges)
+- [4. Objectives](#4-objectives)
+- [5. Target Users](#5-target-users)
+- [6. Solution Overview](#6-solution-overview)
+- [7. How It Works](#7-how-it-works)
+- [8. Impact](#8-impact)
+- [9. Conclusion](#9-conclusion)
+- [10. Use Of Artificial Intelligence](#10-use-of-artificial-intelligence)
+- [11. Try Our Project](#11-try-our-project)
+- [12. NASA Data](#12-nasa-data)
+- [13. Other References](#13-other-references)
+
 
 ---
 
