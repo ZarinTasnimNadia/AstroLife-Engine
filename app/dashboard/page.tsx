@@ -6,7 +6,7 @@ import { EvidenceModal } from "@/components/evidence-modal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Loader2, Sparkles } from "lucide-react"
+import { Loader2, Sparkles, Bot, MessageSquare } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 
 interface Publication {
@@ -153,6 +153,46 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* AI Chat Quick Access */}
+            <Card className="bg-card/50 backdrop-blur-sm border-border/50 cosmic-shadow">
+              <CardHeader>
+                <CardTitle className="text-foreground flex items-center gap-2">
+                  <Bot className="w-5 h-5 text-primary" />
+                  AI Research Assistant
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Get intelligent answers and explore research relationships with AI
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Ask complex questions about space biology research, explore publication relationships, 
+                      and get AI-powered insights with references to specific studies.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
+                        Semantic Search
+                      </span>
+                      <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
+                        Reference Links
+                      </span>
+                      <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
+                        Similar Articles
+                      </span>
+                    </div>
+                  </div>
+                  <Button asChild className="shrink-0">
+                    <a href="/chat" className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      Start Chat
+                    </a>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
