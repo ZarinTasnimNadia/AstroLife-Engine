@@ -6,9 +6,8 @@
 
 - [Demo Video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
-## 0. Table of Contents
+## Table of Contents <!-- omit from toc -->
 
-- [0. Table of Contents](#0-table-of-contents)
 - [1. Team Information](#1-team-information)
 - [2. Executive Summary](#2-executive-summary)
 - [3. Challanges](#3-challanges)
