@@ -1,21 +1,21 @@
 # Project: AstroLife-Engine
-
-# Project : AstroLife-Engine | A Space Biology Knowledge Engine 
+### A Space Biology Knowledge Engine 
 
 ***AstroLife Engine is a dynamic web application designed to simplify decades of NASA’s bioscience research for the future of human space exploration. By leveraging NASA’s open dataset of more than 600 space biology publications, AstroLife makes it easy to search, identify, and visualize key findings. The platform helps researchers, mission planners, and space enthusiasts explore insights more efficiently, enabling better understanding of how living systems adapt to space and supporting humanity’s journey to the Moon, Mars, and beyond.***  
 
-🚀 [Live Web App](TBA - ADD LINE HERE) | 🎥 [Demo Video](TBA - ADD LINK HERE)
+🚀 [Live Web App](https://www.youtube.com/watch?v=dQw4w9WgXcQ) | 🎥 [Demo Video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ---
 
 ## 1. Title & Team
 **Project Title**: Astrolife - Engine  
 **Team**: Luminara  
-- Ryan Ahmed – [GitHub](https://github.com/RyanAhmed911) – TBA - ADDEMAILHERE
-- Nusayba Mahfuza Zaman – [GitHub](https://github.com/Nusuwuba) – TBA - ADDEMAILHERE
-- Raiyan Rahman – [GitHub](https://github.com/Raiyan465-F1) – TBA - ADDEMAILHERE
-- Zarin Tasnim – [GitHub](https://github.com/ZarinTasnimNadia) – TBA - ADDEMAILHERE
-- Al- Saihan Tajvi – [GitHub](https://github.com/Al-Saihan) – TBA - ADDEMAILHERE
+- [![GitHub – Ryan Ahmed](https://img.shields.io/badge/GitHub-RyanAhmed911-blue?logo=github)](https://github.com/RyanAhmed911) – TBA  
+- [![GitHub – Nusayba Mahfuza Zaman](https://img.shields.io/badge/GitHub-Nusuwuba-blue?logo=github)](https://github.com/Nusuwuba) – ✉️ nusaybazaman3@gmail.com  
+- [![GitHub – Raiyan Rahman](https://img.shields.io/badge/GitHub-Raiyan465--F1-blue?logo=github)](https://github.com/Raiyan465-F1) – TBA  
+- [![GitHub – Zarin Tasnim](https://img.shields.io/badge/GitHub-ZarinTasnimNadia-blue?logo=github)](https://github.com/ZarinTasnimNadia) – ✉️ zarin_nadia@yahoo.com  
+- [![GitHub – Al-Saihan Tajvi](https://img.shields.io/badge/GitHub-Al--Saihan-blue?logo=github)](https://github.com/Al-Saihan) – ✉️ al.saihan.bafsd.5@gmail.com  
+
 
 ---
 
