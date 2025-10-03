@@ -17,10 +17,10 @@
 - [7. How It Works](#7-how-it-works)
   - [1. Data Aggregation \& AI Processing](#1-data-aggregation--ai-processing)
   - [2. Multi-Dimensional Exploration Interface](#2-multi-dimensional-exploration-interface)
-    - [🔍 Intelligent Search \& Discovery](#-intelligent-search--discovery)
-    - [📊 Analytics \& Trend Visualization](#-analytics--trend-visualization)
-    - [🕸️ Knowledge Graph Navigation](#️-knowledge-graph-navigation)
-    - [🤖 AI Research Assistant](#-ai-research-assistant)
+    - [Intelligent Search \& Discovery](#intelligent-search--discovery)
+    - [Analytics \& Trend Visualization](#analytics--trend-visualization)
+    - [Knowledge Graph Navigation](#knowledge-graph-navigation)
+    - [AI Research Assistant](#ai-research-assistant)
   - [3. Gap Identification Engine](#3-gap-identification-engine)
 - [8. Impact](#8-impact)
   - [For Researchers](#for-researchers)
@@ -120,24 +120,24 @@ This foundational intelligence fuels a suite of dynamic tools. Researchers can i
 
 ### 2. Multi-Dimensional Exploration Interface
 
-#### 🔍 Intelligent Search & Discovery
+#### Intelligent Search & Discovery
 - Semantic search understands research questions rather than just keywords
 - AI-powered recommendations surface relevant studies across different domains
 - Contextual filtering by organism, mission, research focus, and time period
 
-#### 📊 Analytics & Trend Visualization
+#### Analytics & Trend Visualization
 - Interactive timeline charts show research evolution over 15+ years
 - Topic trend analysis identifies emerging and declining research areas
 - Keyword heatmaps reveal research concentration and gaps
 - Comparative analysis of publication volumes across biological domains
 
-#### 🕸️ Knowledge Graph Navigation
+#### Knowledge Graph Navigation
 - Visual network mapping shows connections between publications, authors, and topics
 - Interactive exploration of research relationships and collaboration patterns
 - Identification of central research hubs and isolated studies
 - Pathway discovery between different research domains
 
-#### 🤖 AI Research Assistant
+#### AI Research Assistant
 - Natural language Q&A about specific studies or broader research questions
 - Contextual explanations of complex space biology concepts
 - Citation-backed answers with direct links to source publications
