@@ -163,9 +163,9 @@ export function AIChat({ className }: AIChatProps) {
 
   return (
     <div className={`flex flex-col h-full ${className}`}>
-      <Card className="flex-1 flex flex-col">
+      <Card className="flex-1 flex flex-col bg-card/50 backdrop-blur-sm border-border/50 cosmic-shadow">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <Bot className="w-5 h-5 text-primary" />
             AI Research Assistant
           </CardTitle>
@@ -255,7 +255,7 @@ export function AIChat({ className }: AIChatProps) {
                   </h4>
                   <div className="space-y-2">
                     {messages[messages.length - 1].references!.map((ref, index) => (
-                      <div key={ref.id} className="bg-muted/50 rounded-lg p-3 text-sm">
+                      <div key={ref.id} className="bg-background/50 border border-border/30 rounded-lg p-3 text-sm">
                         <div className="font-medium text-foreground mb-1">
                           {ref.title}
                         </div>
@@ -297,7 +297,7 @@ export function AIChat({ className }: AIChatProps) {
                   </h4>
                   <div className="space-y-2">
                     {messages[messages.length - 1].similar_articles!.map((article, index) => (
-                      <div key={article.id} className="bg-muted/50 rounded-lg p-3 text-sm">
+                      <div key={article.id} className="bg-background/50 border border-border/30 rounded-lg p-3 text-sm">
                         <div className="font-medium text-foreground mb-1">
                           {article.title}
                         </div>

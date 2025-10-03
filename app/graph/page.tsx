@@ -9,7 +9,7 @@ interface Publication {
   title: string
   authors: string
   year: string
-  keywords: string
+  keywords: string | string[]
   doi: string
   pmcid: string
 }

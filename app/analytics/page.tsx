@@ -11,7 +11,7 @@ interface Publication {
   title: string
   authors: string
   year: string
-  keywords: string
+  keywords: string | string[]
   doi: string
   pmcid: string
 }
@@ -29,6 +29,8 @@ export default function AnalyticsPage() {
         const response = await fetch("/api/publications")
         const data = await response.json()
         const pubs = data.publications || []
+        console.log("[Analytics] Fetched publications:", pubs.length)
+        console.log("[Analytics] First publication sample:", pubs[0])
         setPublications(pubs)
 
         // Process timeline data
@@ -49,20 +51,57 @@ export default function AnalyticsPage() {
 
         // Process heatmap data (keyword frequency by year)
         const keywordYearMap: Record<string, Record<string, number>> = {}
+        let pubsWithKeywords = 0
+        
         pubs.forEach((pub: Publication) => {
-          if (pub.keywords && pub.year) {
-            const keywords = pub.keywords
-              .split(/[,;]/)
-              .map((k) => k.trim())
-              .slice(0, 3)
-            keywords.forEach((keyword) => {
-              if (!keywordYearMap[keyword]) {
-                keywordYearMap[keyword] = {}
+          if (pub.year) {
+            // Handle both string and array formats for keywords
+            let keywords: string[] = []
+            
+            if (pub.keywords) {
+              pubsWithKeywords++
+              
+              if (typeof pub.keywords === 'string') {
+                // If it's a string, split by comma or semicolon
+                keywords = pub.keywords
+                  .split(/[,;]/)
+                  .map((k) => k.trim())
+                  .filter((k) => k.length > 0)
+              } else if (Array.isArray(pub.keywords)) {
+                // If it's already an array, use it directly
+                keywords = pub.keywords.map((k) => String(k).trim()).filter((k) => k.length > 0)
               }
-              keywordYearMap[keyword][pub.year] = (keywordYearMap[keyword][pub.year] || 0) + 1
+            }
+            
+            // If no keywords, extract from title
+            if (keywords.length === 0 && pub.title) {
+              const titleLower = pub.title.toLowerCase()
+              const commonTopics = ["microgravity", "radiation", "plant", "cell", "bone", "muscle", "immune", "space", "mars", "moon"]
+              commonTopics.forEach(topic => {
+                if (titleLower.includes(topic)) {
+                  keywords.push(topic.charAt(0).toUpperCase() + topic.slice(1))
+                }
+              })
+            }
+            
+            // Take top 5 keywords per publication
+            keywords.slice(0, 5).forEach((keyword) => {
+              if (keyword && keyword.length > 2) {
+                // Normalize keyword
+                const normalizedKeyword = keyword.charAt(0).toUpperCase() + keyword.slice(1).toLowerCase()
+                
+                if (!keywordYearMap[normalizedKeyword]) {
+                  keywordYearMap[normalizedKeyword] = {}
+                }
+                keywordYearMap[normalizedKeyword][pub.year] = (keywordYearMap[normalizedKeyword][pub.year] || 0) + 1
+              }
             })
           }
         })
+
+        console.log("[Analytics] Publications with keywords:", pubsWithKeywords, "/", pubs.length)
+        console.log("[Analytics] Keyword year map:", keywordYearMap)
+        console.log("[Analytics] Unique keywords found:", Object.keys(keywordYearMap).length)
 
         // Get top keywords
         const topKeywords = Object.entries(keywordYearMap)
@@ -73,6 +112,8 @@ export default function AnalyticsPage() {
           .sort((a, b) => b.total - a.total)
           .slice(0, 8)
 
+        console.log("[Analytics] Top keywords:", topKeywords)
+
         const recentYears = timeline.slice(-5).map((d) => d.year)
         const heatmap = topKeywords.map(({ keyword }) => {
           const row: any = { keyword }
@@ -82,16 +123,35 @@ export default function AnalyticsPage() {
           return row
         })
 
+        console.log("[Analytics] Heatmap data:", heatmap)
         setHeatmapData(heatmap)
 
         const topicYearMap: Record<string, Record<string, number>> = {}
         const topicCategories = ["microgravity", "radiation", "plant", "cell", "bone", "muscle"]
 
         pubs.forEach((pub: Publication) => {
-          if (pub.keywords && pub.year) {
-            const keywords = pub.keywords.toLowerCase()
+          if (pub.year) {
+            // Check both keywords and title for topic matching
+            const searchText = `${pub.keywords || ""} ${pub.title || ""}`.toLowerCase()
+            
             topicCategories.forEach((topic) => {
-              if (keywords.includes(topic)) {
+              // More flexible matching
+              let matched = false
+              if (topic === "microgravity" && (searchText.includes("microgravity") || searchText.includes("micro-gravity") || searchText.includes("weightless") || searchText.includes("zero gravity"))) {
+                matched = true
+              } else if (topic === "radiation" && (searchText.includes("radiation") || searchText.includes("cosmic ray") || searchText.includes("solar"))) {
+                matched = true
+              } else if (topic === "plant" && (searchText.includes("plant") || searchText.includes("vegetation") || searchText.includes("crop"))) {
+                matched = true
+              } else if (topic === "cell" && (searchText.includes("cell") || searchText.includes("cellular"))) {
+                matched = true
+              } else if (topic === "bone" && (searchText.includes("bone") || searchText.includes("skeletal") || searchText.includes("osteo"))) {
+                matched = true
+              } else if (topic === "muscle" && (searchText.includes("muscle") || searchText.includes("muscular") || searchText.includes("atrophy"))) {
+                matched = true
+              }
+              
+              if (matched) {
                 if (!topicYearMap[topic]) {
                   topicYearMap[topic] = {}
                 }
@@ -101,6 +161,8 @@ export default function AnalyticsPage() {
           }
         })
 
+        console.log("[Analytics] Topic year map:", topicYearMap)
+
         const recentYearsTopics = timeline.slice(-10).map((d) => d.year)
         const topicsTimeline = recentYearsTopics.map((year) => {
           const dataPoint: any = { year }
@@ -109,6 +171,8 @@ export default function AnalyticsPage() {
           })
           return dataPoint
         })
+        
+        console.log("[Analytics] Topics timeline data:", topicsTimeline)
         setTopicsData(topicsTimeline)
       } catch (error) {
         console.error("Error fetching publications:", error)
@@ -208,38 +272,75 @@ export default function AnalyticsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ChartContainer
-                    config={{
-                      microgravity: { label: "Microgravity", color: "oklch(0.705 0.228 328.1)" },
-                      radiation: { label: "Radiation", color: "oklch(0.75 0.2 150)" },
-                      plant: { label: "Plant", color: "oklch(0.7 0.22 90)" },
-                      cell: { label: "Cell", color: "oklch(0.72 0.24 200)" },
-                      bone: { label: "Bone", color: "oklch(0.68 0.26 30)" },
-                      muscle: { label: "Muscle", color: "oklch(0.73 0.21 270)" },
-                    }}
-                    className="h-[350px] w-full"
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={topicsData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.25 0.04 270)" />
-                        <XAxis dataKey="year" stroke="oklch(0.65 0.02 265)" />
-                        <YAxis stroke="oklch(0.65 0.02 265)" />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Legend />
-                        <Line
-                          type="monotone"
-                          dataKey="microgravity"
-                          stroke="oklch(0.705 0.228 328.1)"
-                          strokeWidth={2}
-                        />
-                        <Line type="monotone" dataKey="radiation" stroke="oklch(0.75 0.2 150)" strokeWidth={2} />
-                        <Line type="monotone" dataKey="plant" stroke="oklch(0.7 0.22 90)" strokeWidth={2} />
-                        <Line type="monotone" dataKey="cell" stroke="oklch(0.72 0.24 200)" strokeWidth={2} />
-                        <Line type="monotone" dataKey="bone" stroke="oklch(0.68 0.26 30)" strokeWidth={2} />
-                        <Line type="monotone" dataKey="muscle" stroke="oklch(0.73 0.21 270)" strokeWidth={2} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
+                  {topicsData.length === 0 ? (
+                    <div className="h-[350px] flex items-center justify-center text-muted-foreground">
+                      <p>No topic data available. Loading publications...</p>
+                    </div>
+                  ) : (
+                    <ChartContainer
+                      config={{
+                        microgravity: { label: "Microgravity", color: "oklch(0.705 0.228 328.1)" },
+                        radiation: { label: "Radiation", color: "oklch(0.75 0.2 150)" },
+                        plant: { label: "Plant", color: "oklch(0.7 0.22 90)" },
+                        cell: { label: "Cell", color: "oklch(0.72 0.24 200)" },
+                        bone: { label: "Bone", color: "oklch(0.68 0.26 30)" },
+                        muscle: { label: "Muscle", color: "oklch(0.73 0.21 270)" },
+                      }}
+                      className="h-[350px] w-full"
+                    >
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={topicsData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.25 0.04 270)" />
+                          <XAxis dataKey="year" stroke="oklch(0.65 0.02 265)" />
+                          <YAxis stroke="oklch(0.65 0.02 265)" allowDecimals={false} />
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                          <Legend />
+                          <Line
+                            type="monotone"
+                            dataKey="microgravity"
+                            stroke="oklch(0.705 0.228 328.1)"
+                            strokeWidth={2}
+                            dot={{ r: 4 }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="radiation" 
+                            stroke="oklch(0.75 0.2 150)" 
+                            strokeWidth={2}
+                            dot={{ r: 4 }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="plant" 
+                            stroke="oklch(0.7 0.22 90)" 
+                            strokeWidth={2}
+                            dot={{ r: 4 }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="cell" 
+                            stroke="oklch(0.72 0.24 200)" 
+                            strokeWidth={2}
+                            dot={{ r: 4 }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="bone" 
+                            stroke="oklch(0.68 0.26 30)" 
+                            strokeWidth={2}
+                            dot={{ r: 4 }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="muscle" 
+                            stroke="oklch(0.73 0.21 270)" 
+                            strokeWidth={2}
+                            dot={{ r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -253,44 +354,51 @@ export default function AnalyticsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border/50">
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Keyword</th>
-                        {timelineData.slice(-5).map((d) => (
-                          <th key={d.year} className="text-center py-3 px-4 text-sm font-semibold text-foreground">
-                            {d.year}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {heatmapData.map((row, index) => (
-                        <tr key={index} className="border-b border-border/30">
-                          <td className="py-3 px-4 text-sm text-muted-foreground font-medium">{row.keyword}</td>
-                          {timelineData.slice(-5).map((d) => {
-                            const value = row[d.year] || 0
-                            const intensity = Math.min(value / 5, 1)
-                            return (
-                              <td key={d.year} className="text-center py-3 px-4">
-                                <div
-                                  className="inline-flex items-center justify-center w-12 h-8 rounded text-xs font-medium"
-                                  style={{
-                                    backgroundColor: `oklch(${0.65 - intensity * 0.3} ${0.25 * intensity} 285)`,
-                                    color: intensity > 0.5 ? "oklch(0.98 0.01 265)" : "oklch(0.65 0.02 265)",
-                                  }}
-                                >
-                                  {value > 0 ? value : "-"}
-                                </div>
-                              </td>
-                            )
-                          })}
+                {heatmapData.length === 0 ? (
+                  <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+                    <p>No keyword data available. Loading publications...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border/50">
+                          <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">Keyword</th>
+                          {timelineData.slice(-5).map((d) => (
+                            <th key={d.year} className="text-center py-3 px-4 text-sm font-semibold text-foreground">
+                              {d.year}
+                            </th>
+                          ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {heatmapData.map((row, index) => (
+                          <tr key={index} className="border-b border-border/30">
+                            <td className="py-3 px-4 text-sm text-muted-foreground font-medium">{row.keyword}</td>
+                            {timelineData.slice(-5).map((d) => {
+                              const value = row[d.year] || 0
+                              const intensity = Math.min(value / 5, 1)
+                              return (
+                                <td key={d.year} className="text-center py-3 px-4">
+                                  <div
+                                    className="inline-flex items-center justify-center w-12 h-8 rounded text-xs font-medium transition-all hover:scale-110"
+                                    style={{
+                                      backgroundColor: `oklch(${0.65 - intensity * 0.3} ${0.25 * intensity} 285)`,
+                                      color: intensity > 0.5 ? "oklch(0.98 0.01 265)" : "oklch(0.65 0.02 265)",
+                                    }}
+                                    title={`${row.keyword} in ${d.year}: ${value} publications`}
+                                  >
+                                    {value > 0 ? value : "-"}
+                                  </div>
+                                </td>
+                              )
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

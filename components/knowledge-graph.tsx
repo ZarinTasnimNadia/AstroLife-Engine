@@ -11,7 +11,7 @@ interface Publication {
   title: string
   authors: string
   year: string
-  keywords: string
+  keywords: string | string[]
   doi: string
   pmcid: string
   link?: string
@@ -73,8 +73,10 @@ export function KnowledgeGraph({ publications }: KnowledgeGraphProps) {
     const keywordMap = new Map<string, string[]>()
     const authorMap = new Map<string, string[]>()
     const publicationMap = new Map<string, Publication>()
+    const yearKeywordMap = new Map<string, Set<string>>() // Track keywords by year
 
-    const sampledPubs = publications.slice(0, 50)
+    // Use more publications for richer graph
+    const sampledPubs = publications.slice(0, 100)
 
     sampledPubs.forEach((pub, index) => {
       const pubId = `pub-${index}`
@@ -88,27 +90,54 @@ export function KnowledgeGraph({ publications }: KnowledgeGraphProps) {
         publication: pub,
       })
 
+      // Extract keywords (handle both string and array)
+      let keywords: string[] = []
       if (pub.keywords) {
-        const keywords = pub.keywords
-          .split(/[,;]/)
-          .map((k) => k.trim())
-          .filter((k) => k.length > 0)
-          .slice(0, 3)
+        if (typeof pub.keywords === 'string') {
+          keywords = pub.keywords
+            .split(/[,;]/)
+            .map((k) => k.trim())
+            .filter((k) => k.length > 0)
+        } else if (Array.isArray(pub.keywords)) {
+          keywords = pub.keywords.map((k: any) => String(k).trim()).filter((k) => k.length > 0)
+        }
+      }
 
-        keywords.forEach((keyword) => {
-          if (!keywordMap.has(keyword)) {
-            keywordMap.set(keyword, [])
+      // If no keywords, extract from title
+      if (keywords.length === 0 && pub.title) {
+        const titleLower = pub.title.toLowerCase()
+        const topicKeywords = ["microgravity", "radiation", "plant", "cell", "bone", "muscle", "immune", "space", "mars", "moon", "ISS", "astronaut", "growth", "development"]
+        topicKeywords.forEach(topic => {
+          if (titleLower.includes(topic.toLowerCase())) {
+            keywords.push(topic.charAt(0).toUpperCase() + topic.slice(1))
           }
-          keywordMap.get(keyword)!.push(pubId)
         })
       }
 
+      // Take up to 5 keywords per publication
+      keywords.slice(0, 5).forEach((keyword) => {
+        const normalizedKeyword = keyword.charAt(0).toUpperCase() + keyword.slice(1).toLowerCase()
+        if (!keywordMap.has(normalizedKeyword)) {
+          keywordMap.set(normalizedKeyword, [])
+        }
+        keywordMap.get(normalizedKeyword)!.push(pubId)
+
+        // Track keywords by year for temporal connections
+        if (pub.year) {
+          if (!yearKeywordMap.has(pub.year)) {
+            yearKeywordMap.set(pub.year, new Set())
+          }
+          yearKeywordMap.get(pub.year)!.add(normalizedKeyword)
+        }
+      })
+
+      // Extract authors (take up to 3 per publication)
       if (pub.authors) {
         const authors = pub.authors
           .split(/[,;]/)
           .map((a) => a.trim())
           .filter((a) => a.length > 0)
-          .slice(0, 2)
+          .slice(0, 3)
 
         authors.forEach((author) => {
           if (!authorMap.has(author)) {
@@ -119,47 +148,98 @@ export function KnowledgeGraph({ publications }: KnowledgeGraphProps) {
       }
     })
 
-    Array.from(keywordMap.entries())
+    // Add keyword nodes (show keywords with at least 2 connections)
+    const keywordEntries = Array.from(keywordMap.entries())
       .filter(([_, pubs]) => pubs.length >= 2)
-      .slice(0, 30)
-      .forEach(([keyword, pubIds]) => {
-        const keywordId = `keyword-${keyword}`
-        nodes.push({
-          id: keywordId,
-          name: keyword,
-          type: "keyword",
-          val: pubIds.length * 3,
-          color: "oklch(0.75 0.25 310)", // Pink for keywords
-          relatedPublications: pubIds,
-          connectionCount: pubIds.length,
-        })
+      .sort((a, b) => b[1].length - a[1].length)
+      .slice(0, 40) // Increased from 30
 
-        // Link keyword → publication
-        pubIds.forEach((pubId) => {
-          links.push({ source: keywordId, target: pubId })
-        })
+    keywordEntries.forEach(([keyword, pubIds]) => {
+      const keywordId = `keyword-${keyword}`
+      nodes.push({
+        id: keywordId,
+        name: keyword,
+        type: "keyword",
+        val: Math.min(pubIds.length * 2.5, 20), // Cap the size
+        color: "oklch(0.75 0.25 310)", // Pink for keywords
+        relatedPublications: pubIds,
+        connectionCount: pubIds.length,
       })
 
-    Array.from(authorMap.entries())
-      .filter(([_, pubs]) => pubs.length >= 2)
-      .slice(0, 20)
-      .forEach(([author, pubIds]) => {
-        const authorId = `author-${author}`
-        nodes.push({
-          id: authorId,
-          name: author,
-          type: "author",
-          val: pubIds.length * 3,
-          color: "oklch(0.7 0.2 150)", // Green for authors
-          relatedPublications: pubIds,
-          connectionCount: pubIds.length,
-        })
-
-        // Link publication → author
-        pubIds.forEach((pubId) => {
-          links.push({ source: pubId, target: authorId })
-        })
+      // Link keyword → publication
+      pubIds.forEach((pubId) => {
+        links.push({ source: keywordId, target: pubId })
       })
+    })
+
+    // Add author nodes (show authors with at least 2 publications)
+    const authorEntries = Array.from(authorMap.entries())
+      .filter(([_, pubs]) => pubs.length >= 2)
+      .sort((a, b) => b[1].length - a[1].length)
+      .slice(0, 30) // Increased from 20
+
+    authorEntries.forEach(([author, pubIds]) => {
+      const authorId = `author-${author}`
+      nodes.push({
+        id: authorId,
+        name: author,
+        type: "author",
+        val: Math.min(pubIds.length * 2.5, 20), // Cap the size
+        color: "oklch(0.7 0.2 150)", // Green for authors
+        relatedPublications: pubIds,
+        connectionCount: pubIds.length,
+      })
+
+      // Link publication → author
+      pubIds.forEach((pubId) => {
+        links.push({ source: pubId, target: authorId })
+      })
+    })
+
+    // Create cross-links between keywords that often appear together
+    const keywordIds = keywordEntries.map(([keyword]) => `keyword-${keyword}`)
+    const keywordCooccurrence = new Map<string, Map<string, number>>()
+
+    sampledPubs.forEach((pub) => {
+      let keywords: string[] = []
+      if (pub.keywords) {
+        if (typeof pub.keywords === 'string') {
+          keywords = pub.keywords.split(/[,;]/).map((k) => k.trim()).filter((k) => k.length > 0)
+        } else if (Array.isArray(pub.keywords)) {
+          keywords = pub.keywords.map((k: any) => String(k).trim()).filter((k) => k.length > 0)
+        }
+      }
+
+      const normalizedKeywords = keywords.map(k => k.charAt(0).toUpperCase() + k.slice(1).toLowerCase())
+      
+      // Find co-occurring keywords
+      for (let i = 0; i < normalizedKeywords.length; i++) {
+        for (let j = i + 1; j < normalizedKeywords.length; j++) {
+          const kw1 = `keyword-${normalizedKeywords[i]}`
+          const kw2 = `keyword-${normalizedKeywords[j]}`
+          
+          if (keywordIds.includes(kw1) && keywordIds.includes(kw2)) {
+            if (!keywordCooccurrence.has(kw1)) {
+              keywordCooccurrence.set(kw1, new Map())
+            }
+            const coMap = keywordCooccurrence.get(kw1)!
+            coMap.set(kw2, (coMap.get(kw2) || 0) + 1)
+          }
+        }
+      }
+    })
+
+    // Add keyword-to-keyword links for strong co-occurrences
+    keywordCooccurrence.forEach((coMap, kw1) => {
+      coMap.forEach((count, kw2) => {
+        if (count >= 3) { // Only link keywords that co-occur at least 3 times
+          links.push({ source: kw1, target: kw2 })
+        }
+      })
+    })
+
+    console.log("[Knowledge Graph] Nodes:", nodes.length, "Links:", links.length)
+    console.log("[Knowledge Graph] Keywords:", keywordEntries.length, "Authors:", authorEntries.length)
 
     setOriginalLinks(links)
     setGraphData({ nodes, links })
@@ -221,7 +301,7 @@ export function KnowledgeGraph({ publications }: KnowledgeGraphProps) {
           <CardHeader>
             <CardTitle className="text-foreground">Knowledge Graph</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Interactive network showing Keywords → Publications → Authors. Click any node to explore.
+              Interactive network showing research connections. Keywords link to related keywords, publications, and authors. Click any node to explore relationships.
             </CardDescription>
             <div className="flex items-center gap-6 pt-2 text-sm border-t border-border/30 mt-2">
               <div className="flex items-center gap-2">
