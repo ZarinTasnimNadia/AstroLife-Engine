@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, ExternalLink, ChevronLeft, ChevronRight, Filter, X, ChevronDown, ChevronUp } from "lucide-react"
+import { Search, ExternalLink, ChevronLeft, ChevronRight, Filter, X, ChevronDown, ChevronUp, Sparkles } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Publication {
   title: string
@@ -50,7 +51,70 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
+  const [summaries, setSummaries] = useState<Record<string, string>>({})
+  const [generatingSummaries, setGeneratingSummaries] = useState(false)
+  const [clickedTitles, setClickedTitles] = useState<Set<string>>(new Set())
+  const [openTooltips, setOpenTooltips] = useState<Set<string>>(new Set())
   const itemsPerPage = 10
+
+  // Generate summaries for first 10 publications on component mount
+  useEffect(() => {
+    const generateSummaries = async () => {
+      if (publications.length === 0 || generatingSummaries) return
+      
+      // Only generate for first 10 publications that don't have summaries
+      const firstTen = publications.slice(0, 10)
+      const needsSummary = firstTen.filter(pub => 
+        pub.abstract && 
+        !pub.aiSummary && 
+        !summaries[pub.title]
+      )
+      
+      if (needsSummary.length === 0) return
+      
+      try {
+        setGeneratingSummaries(true)
+        
+        const response = await fetch('/api/generate-summaries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            abstracts: needsSummary.map(pub => ({
+              id: pub.title,
+              title: pub.title,
+              abstract: pub.abstract
+            }))
+          })
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setSummaries(prev => ({ ...prev, ...data.summaries }))
+        }
+      } catch (error) {
+        console.error('Error generating summaries:', error)
+      } finally {
+        setGeneratingSummaries(false)
+      }
+    }
+    
+    generateSummaries()
+  }, [publications, generatingSummaries, summaries])
+
+  const handleTitleClick = (title: string) => {
+    setClickedTitles(prev => new Set([...prev, title]))
+    setOpenTooltips(prev => new Set([...prev, title]))
+  }
+
+  const handleTooltipOpenChange = (title: string, open: boolean) => {
+    if (!open) {
+      setOpenTooltips(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(title)
+        return newSet
+      })
+    }
+  }
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) =>
@@ -106,8 +170,9 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+    <TooltipProvider>
+      <div className="space-y-6">
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardHeader>
           <CardTitle className="text-foreground">Search & Filter Publications</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -211,7 +276,41 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
                 {currentPublications.map((pub, index) => (
                   <TableRow key={index} className="border-border/50 hover:bg-muted/30">
                     <TableCell className="font-medium text-foreground max-w-xl">
-                      <span className="line-clamp-2">{pub.title}</span>
+                      <Tooltip 
+                        open={openTooltips.has(pub.title)} 
+                        onOpenChange={(open) => handleTooltipOpenChange(pub.title, open)}
+                      >
+                        <TooltipTrigger asChild>
+                          <span 
+                            className="line-clamp-2 cursor-pointer hover:text-primary transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                            onClick={() => handleTitleClick(pub.title)}
+                          >
+                            {pub.title}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-md p-3">
+                          {clickedTitles.has(pub.title) ? (
+                            <div className="space-y-2">
+                              {(summaries[pub.title] || pub.aiSummary) ? (
+                                <p className="text-xs text-foreground">
+                                  {summaries[pub.title] || pub.aiSummary}
+                                </p>
+                              ) : generatingSummaries ? (
+                                <div className="flex items-center gap-2 text-xs text-foreground">
+                                  <Sparkles className="w-3 h-3 animate-pulse" />
+                                  Generating AI summary...
+                                </div>
+                              ) : (
+                                <p className="text-xs text-foreground">
+                                  AI summary not available
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-sm font-medium text-foreground">Click for details</p>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                     <TableCell className="text-muted-foreground max-w-xs">
                       <span className="line-clamp-1">{pub.authors || "N/A"}</span>
@@ -268,6 +367,7 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
           </Button>
         </div>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }
