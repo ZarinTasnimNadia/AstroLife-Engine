@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Database, Network, FileText, Github } from "lucide-react"
+import { Database, Network, FileText, Github, Search, Bot } from "lucide-react"
 import Link from "next/link"
 import { Navigation } from "@/components/navigation"
 
@@ -27,10 +27,16 @@ export default function LandingPage() {
             Explore 600+ NASA space biology publications to support Moon and Mars exploration missions. Discover
             insights, connections, and knowledge gaps in space life sciences research.
           </p>
-          <div className="pt-4">
+          <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/dashboard">
               <Button size="lg" className="text-lg px-8 py-6 cosmic-glow">
                 Explore Publications
+              </Button>
+            </Link>
+            <Link href="/search">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+                <Search className="w-5 h-5 mr-2" />
+                Semantic Search
               </Button>
             </Link>
           </div>
@@ -39,39 +45,51 @@ export default function LandingPage() {
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors cosmic-shadow">
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-primary/20 border border-primary flex items-center justify-center mb-4">
                 <Database className="w-6 h-6 text-primary" />
               </div>
-              <CardTitle className="text-foreground">Search NASA Space Biology Papers</CardTitle>
+              <CardTitle className="text-foreground">Browse Publications</CardTitle>
               <CardDescription className="text-muted-foreground">
-                Access and search through 600+ peer-reviewed publications from NASA&apos;s Space Biology program
+                Access and explore 600+ peer-reviewed publications from NASA&apos;s Space Biology program
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors cosmic-shadow">
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-accent/50 transition-colors cosmic-shadow">
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-accent/20 border border-accent flex items-center justify-center mb-4">
-                <Network className="w-6 h-6 text-accent" />
+                <Search className="w-6 h-6 text-accent" />
               </div>
-              <CardTitle className="text-foreground">Interactive Knowledge Graph</CardTitle>
+              <CardTitle className="text-foreground">Semantic Search</CardTitle>
               <CardDescription className="text-muted-foreground">
-                Visualize connections between publications, authors, and research topics in an interactive network
+                Find relevant research using AI-powered semantic search with vector embeddings
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors cosmic-shadow">
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-chart-2/50 transition-colors cosmic-shadow">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-lg bg-chart-2/20 border border-chart-2 flex items-center justify-center mb-4">
+                <Bot className="w-6 h-6 text-chart-2" />
+              </div>
+              <CardTitle className="text-foreground">AI Chat Assistant</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Ask complex questions and get intelligent answers with references to specific studies
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-chart-3/50 transition-colors cosmic-shadow">
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-chart-3/20 border border-chart-3 flex items-center justify-center mb-4">
-                <FileText className="w-6 h-6 text-chart-3" />
+                <Network className="w-6 h-6 text-chart-3" />
               </div>
-              <CardTitle className="text-foreground">Summaries with Provenance</CardTitle>
+              <CardTitle className="text-foreground">Knowledge Graph</CardTitle>
               <CardDescription className="text-muted-foreground">
-                Get AI-powered summaries with direct links to source publications and datasets from NASA OSDR
+                Visualize connections between publications, authors, and research topics
               </CardDescription>
             </CardHeader>
           </Card>

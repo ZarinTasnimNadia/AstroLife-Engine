@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, ExternalLink, ChevronLeft, ChevronRight, Filter, X, ChevronDown, ChevronUp } from "lucide-react"
+import { Search, ExternalLink, ChevronLeft, ChevronRight, Filter, X, ChevronDown, ChevronUp, Sparkles } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Publication {
   title: string
@@ -50,7 +51,109 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
+  const [summaries, setSummaries] = useState<Record<string, string>>({})
+  const [generatingSummaries, setGeneratingSummaries] = useState(false)
+  const [clickedTitles, setClickedTitles] = useState<Set<string>>(new Set())
+  const [openTooltips, setOpenTooltips] = useState<Set<string>>(new Set())
   const itemsPerPage = 10
+
+  // Load summaries from localStorage on component mount
+  useEffect(() => {
+    const loadSummariesFromStorage = () => {
+      try {
+        const stored = localStorage.getItem('publication-summaries')
+        if (stored) {
+          const parsedSummaries = JSON.parse(stored)
+          const summaryCount = Object.keys(parsedSummaries).length
+          console.log(`📦 [LocalStorage] Loaded ${summaryCount} cached AI summaries`)
+          setSummaries(parsedSummaries)
+        } else {
+          console.log(`📦 [LocalStorage] No cached summaries found`)
+        }
+      } catch (error) {
+        console.error('Error loading summaries from localStorage:', error)
+      }
+    }
+    
+    loadSummariesFromStorage()
+  }, [])
+
+  // Generate summaries for first 10 publications on component mount
+  useEffect(() => {
+    const generateSummaries = async () => {
+      if (publications.length === 0 || generatingSummaries) return
+      
+      // Only generate for first 10 publications that don't have summaries
+      const firstTen = publications.slice(0, 10)
+      const needsSummary = firstTen.filter(pub => 
+        pub.abstract && 
+        !pub.aiSummary && 
+        !summaries[pub.title]
+      )
+      
+      if (needsSummary.length === 0) {
+        console.log(`🤖 [AI API] All summaries already available (cached or existing)`)
+        return
+      }
+      
+      console.log(`🤖 [AI API] Generating summaries for ${needsSummary.length} publications`)
+      
+      try {
+        setGeneratingSummaries(true)
+        
+        const response = await fetch('/api/generate-summaries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            abstracts: needsSummary.map(pub => ({
+              id: pub.title,
+              title: pub.title,
+              abstract: pub.abstract
+            }))
+          })
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          const newSummaries = { ...summaries, ...data.summaries }
+          const newCount = Object.keys(data.summaries).length
+          
+          console.log(`🤖 [AI API] Successfully generated ${newCount} summaries`)
+          
+          // Save to localStorage
+          try {
+            localStorage.setItem('publication-summaries', JSON.stringify(newSummaries))
+            console.log(`💾 [LocalStorage] Saved ${Object.keys(newSummaries).length} total summaries to cache`)
+          } catch (error) {
+            console.error('Error saving summaries to localStorage:', error)
+          }
+          
+          setSummaries(newSummaries)
+        }
+      } catch (error) {
+        console.error('Error generating summaries:', error)
+      } finally {
+        setGeneratingSummaries(false)
+      }
+    }
+    
+    generateSummaries()
+  }, [publications, generatingSummaries, summaries])
+
+  const handleTitleClick = (title: string) => {
+    setClickedTitles(prev => new Set([...prev, title]))
+    setOpenTooltips(prev => new Set([...prev, title]))
+  }
+
+  const handleTooltipOpenChange = (title: string, open: boolean) => {
+    if (!open) {
+      setOpenTooltips(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(title)
+        return newSet
+      })
+    }
+  }
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) =>
@@ -68,27 +171,36 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
     setCurrentPage(1)
   }
 
+  // Function to clear stored summaries (useful for debugging)
+  const clearStoredSummaries = () => {
+    localStorage.removeItem('publication-summaries')
+    setSummaries({})
+  }
+
   const filteredPublications = useMemo(() => {
     let filtered = publications
 
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(
-        (pub) =>
-          pub.title.toLowerCase().includes(query) ||
-          pub.pmcid.toLowerCase().includes(query) ||
-          pub.authors.toLowerCase().includes(query) ||
-          pub.year.includes(query) ||
-          pub.abstract?.toLowerCase().includes(query) ||
-          pub.keywords?.toLowerCase().includes(query),
-      )
+    // Apply search query filter (search in title and abstract)
+    if (searchQuery && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim()
+      filtered = filtered.filter((pub) => {
+        const title = pub.title?.toLowerCase() || ""
+        const abstract = pub.abstract?.toLowerCase() || ""
+        
+        return title.includes(query) || abstract.includes(query)
+      })
     }
 
+    // Apply keyword filter (search selected keywords in title and abstract)
     if (selectedKeywords.length > 0) {
       filtered = filtered.filter((pub) => {
-        if (!pub.keywords) return false
-        const pubKeywords = pub.keywords.toLowerCase()
-        return selectedKeywords.some((keyword) => pubKeywords.includes(keyword.toLowerCase()))
+        const title = pub.title?.toLowerCase() || ""
+        const abstract = pub.abstract?.toLowerCase() || ""
+        const searchText = `${title} ${abstract}`
+        
+        return selectedKeywords.some((keyword) => 
+          searchText.includes(keyword.toLowerCase())
+        )
       })
     }
 
@@ -106,12 +218,13 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+    <TooltipProvider>
+      <div className="space-y-6">
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardHeader>
           <CardTitle className="text-foreground">Search & Filter Publications</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Filter by title, author, year, keywords, or PMCID
+            Search by title or abstract, or filter by topic keywords
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -136,7 +249,8 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
               </div>
               {selectedKeywords.length > 0 && (
                 <Button variant="ghost" size="sm" onClick={clearKeywords} className="h-7 px-2 text-xs">
-                  <X className="w-3 h-3 mr-1" /> Clear filters
+                  <X className="w-3 h-3 mr-1" />
+                  Clear filters
                 </Button>
               )}
             </div>
@@ -211,7 +325,41 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
                 {currentPublications.map((pub, index) => (
                   <TableRow key={index} className="border-border/50 hover:bg-muted/30">
                     <TableCell className="font-medium text-foreground max-w-xl">
-                      <span className="line-clamp-2">{pub.title}</span>
+                      <Tooltip 
+                        open={openTooltips.has(pub.title)} 
+                        onOpenChange={(open) => handleTooltipOpenChange(pub.title, open)}
+                      >
+                        <TooltipTrigger asChild>
+                          <span 
+                            className="line-clamp-2 cursor-pointer hover:text-primary transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                            onClick={() => handleTitleClick(pub.title)}
+                          >
+                            {pub.title}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-md p-3">
+                          {clickedTitles.has(pub.title) ? (
+                            <div className="space-y-2">
+                              {(summaries[pub.title] || pub.aiSummary) ? (
+                                <p className="text-xs text-foreground">
+                                  {summaries[pub.title] || pub.aiSummary}
+                                </p>
+                              ) : generatingSummaries ? (
+                                <div className="flex items-center gap-2 text-xs text-foreground">
+                                  <Sparkles className="w-3 h-3 animate-pulse" />
+                                  Generating AI summary...
+                                </div>
+                              ) : (
+                                <p className="text-xs text-foreground">
+                                  AI summary not available
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-sm font-medium text-foreground">Click for details</p>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                     <TableCell className="text-muted-foreground max-w-xs">
                       <span className="line-clamp-1">{pub.authors || "N/A"}</span>
@@ -220,7 +368,7 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
                     <TableCell className="text-muted-foreground">
                       {pub.pmcid && (
                         <a
-                          href={pub.link}
+                          href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.pmcid}/`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary hover:text-primary/80 transition-colors font-mono text-sm inline-flex items-center gap-1"
@@ -268,6 +416,7 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
           </Button>
         </div>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }
