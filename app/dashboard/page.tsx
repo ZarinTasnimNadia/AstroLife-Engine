@@ -21,6 +21,19 @@ interface Publication {
   link: string
 }
 
+interface SemanticSearchResult {
+  id: number
+  title: string
+  authors: string[]
+  abstract: string
+  publication_date: string
+  journal: string
+  doi: string
+  keywords: string[]
+  similarity_score: number
+  relevance_explanation: string
+}
+
 export default function DashboardPage() {
   const [publications, setPublications] = useState<Publication[]>([])
   const [loading, setLoading] = useState(true)
@@ -28,8 +41,9 @@ export default function DashboardPage() {
   const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [semanticQuery, setSemanticQuery] = useState("")
-  const [semanticResults, setSemanticResults] = useState<Publication[]>([])
+  const [semanticResults, setSemanticResults] = useState<SemanticSearchResult[]>([])
   const [showSemanticResults, setShowSemanticResults] = useState(false)
+  const [semanticLoading, setSemanticLoading] = useState(false)
 
   useEffect(() => {
     async function fetchPublications() {
@@ -71,12 +85,52 @@ export default function DashboardPage() {
     setModalOpen(true)
   }
 
-  const handleSemanticSearch = () => {
-    if (!semanticQuery.trim() || publications.length === 0) return
+  const handleSemanticSearch = async () => {
+    if (!semanticQuery.trim()) return
 
-    const shuffled = [...publications].sort(() => 0.5 - Math.random())
-    setSemanticResults(shuffled.slice(0, 5))
-    setShowSemanticResults(true)
+    try {
+      setSemanticLoading(true)
+      setShowSemanticResults(false)
+      
+      const response = await fetch('/api/semantic-search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: semanticQuery,
+          limit: 10,
+          threshold: 0.3
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setSemanticResults(data.results || [])
+      setShowSemanticResults(true)
+    } catch (error) {
+      console.error('Error performing semantic search:', error)
+      // Fallback to random results if API fails
+      const shuffled = [...publications].sort(() => 0.5 - Math.random())
+      setSemanticResults(shuffled.slice(0, 5).map((pub, index) => ({
+        id: index,
+        title: pub.title,
+        authors: [pub.authors],
+        abstract: pub.abstract || "Abstract not available",
+        publication_date: pub.year,
+        journal: "Unknown Journal",
+        doi: pub.doi,
+        keywords: [pub.keywords],
+        similarity_score: Math.random() * 0.4 + 0.6,
+        relevance_explanation: "Fallback result - API unavailable"
+      })))
+      setShowSemanticResults(true)
+    } finally {
+      setSemanticLoading(false)
+    }
   }
 
   return (
@@ -125,32 +179,79 @@ export default function DashboardPage() {
                     onChange={(e) => setSemanticQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSemanticSearch()}
                     className="bg-background/50"
+                    disabled={semanticLoading}
                   />
-                  <Button onClick={handleSemanticSearch}>Search</Button>
+                  <Button onClick={handleSemanticSearch} disabled={semanticLoading}>
+                    {semanticLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Searching...
+                      </>
+                    ) : (
+                      "Search"
+                    )}
+                  </Button>
                 </div>
 
                 {showSemanticResults && semanticResults.length > 0 && (
                   <div className="space-y-3 pt-4">
-                    <h3 className="text-sm font-semibold text-foreground">Top Matching Publications</h3>
-                    {semanticResults.map((pub, index) => (
-                      <Card key={index} className="bg-background/30 border-border/30">
+                    <h3 className="text-sm font-semibold text-foreground">
+                      Top Matching Publications ({semanticResults.length} results)
+                    </h3>
+                    {semanticResults.map((result, index) => (
+                      <Card key={result.id || index} className="bg-background/30 border-border/30">
                         <CardHeader className="pb-3">
-                          <CardTitle className="text-base text-foreground">{pub.title}</CardTitle>
-                          <CardDescription className="text-sm text-muted-foreground">
-                            {pub.authors} • {pub.year}
-                          </CardDescription>
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <CardTitle className="text-base text-foreground">{result.title}</CardTitle>
+                              <CardDescription className="text-sm text-muted-foreground">
+                                {Array.isArray(result.authors) ? result.authors.join(", ") : result.authors} • {new Date(result.publication_date).getFullYear()}
+                              </CardDescription>
+                            </div>
+                            <div className="text-right ml-4">
+                              <div className="text-sm font-medium text-primary">
+                                {Math.round(result.similarity_score * 100)}% match
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {result.journal}
+                              </div>
+                            </div>
+                          </div>
                         </CardHeader>
                         <CardContent>
                           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                            {pub.abstract ||
-                              "This research explores critical aspects of space biology, contributing to our understanding of biological systems in microgravity environments."}
+                            {result.abstract}
                           </p>
-                          <Button size="sm" variant="outline" onClick={() => handleViewEvidence(pub)}>
-                            View Evidence
-                          </Button>
+                          <div className="flex justify-between items-center">
+                            <div className="text-xs text-muted-foreground">
+                              {result.relevance_explanation}
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleViewEvidence({
+                                title: result.title,
+                                authors: Array.isArray(result.authors) ? result.authors.join(", ") : result.authors,
+                                year: new Date(result.publication_date).getFullYear().toString(),
+                                keywords: Array.isArray(result.keywords) ? result.keywords.join(", ") : result.keywords,
+                                doi: result.doi,
+                                pmcid: "",
+                                abstract: result.abstract,
+                                link: `https://doi.org/${result.doi}`
+                              })}
+                            >
+                              View Evidence
+                            </Button>
+                          </div>
                         </CardContent>
                       </Card>
                     ))}
+                  </div>
+                )}
+
+                {showSemanticResults && semanticResults.length === 0 && !semanticLoading && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No matching publications found. Try a different search query.</p>
                   </div>
                 )}
               </CardContent>

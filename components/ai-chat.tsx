@@ -163,18 +163,19 @@ export function AIChat({ className }: AIChatProps) {
 
   return (
     <div className={`flex flex-col h-full ${className}`}>
-      <Card className="flex-1 flex flex-col bg-card/50 backdrop-blur-sm border-border/50 cosmic-shadow">
-        <CardHeader className="pb-3">
+      <Card className="flex-1 flex flex-col bg-card/50 backdrop-blur-sm border-border/50 cosmic-shadow overflow-hidden">
+        <CardHeader className="pb-3 flex-shrink-0">
           <CardTitle className="flex items-center gap-2 text-foreground">
             <Bot className="w-5 h-5 text-primary" />
             AI Research Assistant
           </CardTitle>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 px-6">
-            <div className="space-y-4 pb-4">
-              {messages.map((message) => (
+        <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+          <div className="flex-1 min-h-0 px-6">
+            <ScrollArea className="h-full max-h-[400px]">
+              <div className="space-y-4 pb-4">
+                {messages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex gap-3 ${
@@ -239,14 +240,10 @@ export function AIChat({ className }: AIChatProps) {
                 </div>
               )}
               
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-          
-          {/* References and Similar Articles */}
-          {messages.length > 0 && messages[messages.length - 1].type === "ai" && 
-           (messages[messages.length - 1].references?.length || messages[messages.length - 1].similar_articles?.length) && (
-            <div className="border-t p-6 space-y-4">
+              {/* References and Similar Articles */}
+              {messages.length > 0 && messages[messages.length - 1].type === "ai" && 
+               (messages[messages.length - 1].references?.length || messages[messages.length - 1].similar_articles?.length) && (
+                <div className="border-t mt-4 pt-4 space-y-4">
               {messages[messages.length - 1].references && messages[messages.length - 1].references!.length > 0 && (
                 <div>
                   <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -330,8 +327,13 @@ export function AIChat({ className }: AIChatProps) {
                   </div>
                 </div>
               )}
-            </div>
-          )}
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+              </div>
+            </ScrollArea>
+          </div>
           
           {error && (
             <div className="px-6 pb-4">
@@ -341,26 +343,7 @@ export function AIChat({ className }: AIChatProps) {
             </div>
           )}
           
-          {showSuggestions && messages.length === 1 && (
-            <div className="px-6 pb-4">
-              <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedQuestions.map((question, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSuggestionClick(question)}
-                    className="text-xs"
-                  >
-                    {question}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          <div className="border-t p-6">
+          <div className="border-t p-6 space-y-4">
             <form onSubmit={handleSubmit} className="flex gap-2">
               <Input
                 ref={inputRef}
@@ -378,6 +361,25 @@ export function AIChat({ className }: AIChatProps) {
                 )}
               </Button>
             </form>
+            
+            {showSuggestions && messages.length === 1 && !isLoading && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
+                <div className="flex flex-wrap gap-2 pb-0 mb-0">
+                  {suggestedQuestions.map((question, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSuggestionClick(question)}
+                      className="text-xs"
+                    >
+                      {question}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
