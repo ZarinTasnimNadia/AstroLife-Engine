@@ -1,9 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { KnowledgeGraph } from "@/components/knowledge-graph"
+import dynamic from "next/dynamic"
 import { Loader2 } from "lucide-react"
 import { Navigation } from "@/components/navigation"
+
+// Dynamically import KnowledgeGraph to prevent SSR issues
+const KnowledgeGraph = dynamic(() => import("@/components/knowledge-graph").then(mod => ({ default: mod.KnowledgeGraph })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center py-24">
+      <div className="text-center space-y-4">
+        <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+        <p className="text-muted-foreground">Loading knowledge graph...</p>
+      </div>
+    </div>
+  )
+})
 
 interface Publication {
   title: string
