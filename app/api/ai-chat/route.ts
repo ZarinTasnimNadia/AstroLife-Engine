@@ -197,10 +197,14 @@ User Question: ${message}
 Craft a response that:
 - Starts with a brief, friendly acknowledgment of their question
 - Explains the topic in an engaging, accessible way
-- References specific studies naturally (e.g., "A fascinating study by [authors] found that...")
+- References specific studies naturally with inline citations (e.g., "A fascinating study by [authors] found that... (DOI: [doi])")
+- ALWAYS include the DOI when mentioning a specific study in the format: (DOI: [doi])
 - Uses conversational transitions like "What's really interesting is..." or "This connects to..."
 - Ends with an invitation for further exploration (e.g., "Want to dive deeper into...?")
 - Maintains scientific accuracy throughout
+- If mention topic is not found in the context, you can say "I don't have any information on that topic." but show relevant topic from the publication and internet
+
+IMPORTANT: When you reference any specific study from the context, you MUST include the DOI in parentheses immediately after the reference. For example: "Smith et al. discovered that microgravity affects muscle atrophy (DOI: 10.1234/example.doi)"
 
 Keep your response conversational but informative - aim for a friendly expert, not a textbook!`,
       maxOutputTokens: 1000,
