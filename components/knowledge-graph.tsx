@@ -52,7 +52,7 @@ export function KnowledgeGraph({ publications }: KnowledgeGraphProps) {
   useEffect(() => {
     const updateDimensions = () => {
       const container = document.getElementById("graph-container")
-      if (container) {
+      if (container && typeof window !== 'undefined') {
         setDimensions({
           width: container.clientWidth,
           height: Math.max(600, window.innerHeight - 300),
@@ -60,9 +60,11 @@ export function KnowledgeGraph({ publications }: KnowledgeGraphProps) {
       }
     }
 
-    updateDimensions()
-    window.addEventListener("resize", updateDimensions)
-    return () => window.removeEventListener("resize", updateDimensions)
+    if (typeof window !== 'undefined') {
+      updateDimensions()
+      window.addEventListener("resize", updateDimensions)
+      return () => window.removeEventListener("resize", updateDimensions)
+    }
   }, [])
 
   useEffect(() => {
