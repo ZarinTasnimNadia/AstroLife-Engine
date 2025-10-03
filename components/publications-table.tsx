@@ -368,7 +368,7 @@ export function PublicationsTable({ publications, onViewEvidence, isSummaryLoadi
                     <TableCell className="text-muted-foreground">
                       {pub.pmcid && (
                         <a
-                          href={pub.link}
+                          href={`https://www.ncbi.nlm.nih.gov/pmc/articles/${pub.pmcid}/`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary hover:text-primary/80 transition-colors font-mono text-sm inline-flex items-center gap-1"
