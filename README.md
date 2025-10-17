@@ -34,7 +34,7 @@
 | --------------------- | ------------------------------------------------------- | --------------------------- |
 | Ryan Ahmed            | [RyanAhmed911](https://github.com/RyanAhmed911)         | ryanahmed9110@gmail.com     |
 | Nusayba Mahfuza Zaman | [Nusuwuba](https://github.com/Nusuwuba)                 | nusaybazaman3@gmail.com     |
-| Raiyan Rahman         | [Raiyan465-F1](https://github.com/Raiyan465-F1)         | TBA                         |
+| Raiyan Rahman         | [Raiyan465-F1](https://github.com/Raiyan465-F1)         | justanotherone465@gmail.com |                        |
 | Zarin Tasnim          | [ZarinTasnimNadia](https://github.com/ZarinTasnimNadia) | zarin_nadia@yahoo.com       |
 | Al-Saihan Tajvi       | [Al-Saihan](https://github.com/Al-Saihan)               | al.saihan.bafsd.5@gmail.com |
 
