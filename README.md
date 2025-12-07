@@ -146,7 +146,7 @@ The AstroLife Engine is a foundational platform designed to democratize space bi
 
 ## 9. Conclusion
 
-AstroLife Engine transforms these hundreds of publications into an accessible, AI-powered dashboard, enabling researchers, mission planners, and policymakers to quickly uncover insights, identify gaps, and support safer missions to the Moon, Mars, and beyond.
+AstroLife Engine converts these hundreds of publications into an accessible, AI-powered dashboard, enabling researchers, mission planners, and policymakers to quickly uncover insights, identify gaps, and support safer missions to the Moon, Mars, and beyond.
 
 ---
 
